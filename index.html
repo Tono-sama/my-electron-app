@@ -1,15 +1,43 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <title>Hello World!</title>
-  </head>
-  <body>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+</head>
+<body>
     <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
+
+    <!-- テーマ変更 -->
+    <p>Current theme source: <strong id="theme-source">System</strong></p>
+    <button id="toggle-dark-mode">Toggle Dark Mode</button>
+    <button id="reset-to-system">Reset to System Theme</button>
+    
+    <!-- print log -->
+    <p>print log</p>
+    <button id="print-log">Print Log</button>
+    
+    <!-- HTTP request -->
+    <p>HTTP request</p>
+    <button id="http-request-get">http-request-get</button>
+    <p>response: <span id="http-response">no response</span></p>
+
+    <!-- DB操作 -->
+    <p>DB操作</p>
+    <button id="postgres-get">postgres-get</button>
+    <p>response: <span id="postgres-get-response">no response</span></p>
+    <button id="postgres-insert">postgres-insert</button>
+    <p>response: <span id="postgres-insert-response">no response</span></p>
+
+    <!-- TODO:ファイル操作 -->
+    <!-- <p>ファイル操作</p>
+    <button id="file-open">file-open</button>
+    <p>response: <span id="file-open-response">no response</span></p>
+    <button id="file-download">file-download</button>
+    <p>response: <span id="file-download-response">no response</span></p> -->
+
+    <script src="renderer.js"></script>
   </body>
+</body>
 </html>
