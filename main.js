@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron/main');
 const { Menu, dialog } = require('electron');
 const path = require('node:path');
 const axios = require('axios');
+const fs = require('fs');
 const { Client } = require('pg');
 
 let win = null;
@@ -36,6 +37,7 @@ ipcMain.handle('print-log:print', () => {
   console.log('print log from main.js')
 })
 
+// HTTP request
 ipcMain.handle('http-request:get', async () => {
   console.log('http-request:get')
   const url = "https://qiita.com/api/v2/items";
@@ -62,7 +64,8 @@ ipcMain.handle('http-request:get', async () => {
   return result;
 })
 
-// TODO: edit
+// DB操作
+// TODO: 接続設定
 const client = new Client({
   user: 'postgres',
   host: 'localhost',
@@ -108,16 +111,40 @@ ipcMain.handle('postgres:insert', async () => {
 })
 
 // TODO: ファイル操作
-// ipcMain.handle('file:open', async () => {
-//   console.log('file:open')
-//   await dialog.showOpenDialog({ properties: ['openFile'] }, (filePath) => {
-//     console.log(`filePath: ${filePath}`)
-//     win.webContents.send('open_file', filePath);
-//   })
-// })
-// ipcMain.handle('file:download', () => {
-//   console.log('file:download')
-// })
+ipcMain.handle('file:select', async () => {
+  console.log('file:select');
+  filePath = null;
+  await dialog.showOpenDialog({ properties: ['openFile'] })
+    .then((res) => {
+      console.log(`res: ${res}`);
+      if (res.canceled) return null;
+
+      filePath = res.filePaths[0];
+      console.log(`filePath: ${filePath}`)
+    })
+    .catch((err) => {
+      console.log(`Error: ${err}`)
+      return null;
+    })
+    
+  const result = await fs.readFileSync(filePath, { encoding: 'utf8' });
+  win.webContents.send("read-file", result);
+  return result;
+})
+
+ipcMain.handle('file:save', async (event, data) => {
+  console.log('file:save');
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    filters: [
+      { name: 'Documents', extensions: ['txt'] }
+    ]
+  })
+
+  if (canceled) return;
+  console.log(`filePath: ${filePath}`);
+  console.log(`fileContent: ${data}`);
+  fs.writeFileSync(filePath, data);
+})
 
 
 app.whenReady().then( async () => {
